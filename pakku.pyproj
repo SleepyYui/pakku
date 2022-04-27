@@ -21,7 +21,16 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="cogs\moderation\standard_moderation.py" />
     <Compile Include="pakku.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".env" />
+    <Content Include=".gitignore" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="cogs\" />
+    <Folder Include="cogs\moderation\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
