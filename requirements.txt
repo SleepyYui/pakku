@@ -1,0 +1,10 @@
+#mysql-connector-python
+pymongo==4.1.1
+py-cord==2.0.0b7
+asyncio==3.4.3
+datetime==4.4
+#pandas==0.20.3
+python-decouple==3.6
+socketio==0.2.1
+typing==3.6.6
+dnspython==1.16.0
