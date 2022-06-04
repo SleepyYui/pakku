@@ -13,6 +13,7 @@ import os
 from discord.utils import get
 import schedule
 from discord.ext.commands import MemberNotFound
+from discord.ext.commands import MissingPermissions
 from decouple import config
 
 
@@ -42,7 +43,11 @@ async def on_command_error(ctx, error):
         return
 
     if isinstance(error, MemberNotFound):
-        await ctx.send("Can't find this member")
+        await ctx.send("Can't find this member", delete_after=10)
+        return
+
+    if isinstance(error, MissingPermissions):
+        await ctx.send("I don't have the permissions to do this", delete_after=10)
         return
     raise error
 

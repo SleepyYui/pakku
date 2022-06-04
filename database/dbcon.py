@@ -60,42 +60,42 @@ class Server:
             def prole(server_id, user_id, role_id):
                 server = pakkucol[server_id]["users"]
                 if not server.find_one({"user_id": user_id}):
-                    return False
+                    server.insert_one({"user_id": user_id})
                 server.update_one({"user_id": user_id}, {"$push": {"proles": role_id}})
                 return True
 
             def warn(server_id, user_id, warn_content):
                 server = pakkucol[server_id]["users"]
                 if not server.find_one({"user_id": user_id}):
-                    return False
+                    server.insert_one({"user_id": user_id})
                 server.update_one({"user_id": user_id}, {"$push": {"warns": warn_content}})
                 return True
 
             def note(server_id, user_id, note_content):
                 server = pakkucol[server_id]["users"]
                 if not server.find_one({"user_id": user_id}):
-                    return False
+                    server.insert_one({"user_id": user_id})
                 server.update_one({"user_id": user_id}, {"$push": {"notes": note_content}})
                 return True
 
             def ban(server_id, user_id, ban_reason):
                 server = pakkucol[server_id]["users"]
                 if not server.find_one({"user_id": user_id}):
-                    return False
+                    server.insert_one({"user_id": user_id})
                 server.update_one({"user_id": user_id}, {"$push": {"bans": ban_reason}})
                 return True
 
             def kick(server_id, user_id, kick_reason):
                 server = pakkucol[server_id]["users"]
                 if not server.find_one({"user_id": user_id}):
-                    return False
+                    server.insert_one({"user_id": user_id})
                 server.update_one({"user_id": user_id}, {"$push": {"kicks": kick_reason}})
                 return True
 
             def mute(server_id, user_id, mute_reason):
                 server = pakkucol[server_id]["users"]
                 if not server.find_one({"user_id": user_id}):
-                    return False
+                    server.insert_one({"user_id": user_id})
                 server.update_one({"user_id": user_id}, {"$push": {"mutes": mute_reason}})
                 return True
 
@@ -110,42 +110,42 @@ class Server:
             def prole(server_id, user_id, role_id):
                 server = pakkucol[server_id]["users"]
                 if not server.find_one({"user_id": user_id}):
-                    return False
+                    server.insert_one({"user_id": user_id})
                 server.update_one({"user_id": user_id}, {"$pull": {"proles": role_id}})
                 return True
 
             def warn(server_id, user_id, warn_content):
                 server = pakkucol[server_id]["users"]
                 if not server.find_one({"user_id": user_id}):
-                    return False
+                    server.insert_one({"user_id": user_id})
                 server.update_one({"user_id": user_id}, {"$pull": {"warns": warn_content}})
                 return True
 
             def note(server_id, user_id, note_content):
                 server = pakkucol[server_id]["users"]
                 if not server.find_one({"user_id": user_id}):
-                    return False
+                    server.insert_one({"user_id": user_id})
                 server.update_one({"user_id": user_id}, {"$pull": {"notes": note_content}})
                 return True
 
             def ban(server_id, user_id, ban_reason):
                 server = pakkucol[server_id]["users"]
                 if not server.find_one({"user_id": user_id}):
-                    return False
+                    server.insert_one({"user_id": user_id})
                 server.update_one({"user_id": user_id}, {"$pull": {"bans": ban_reason}})
                 return True
 
             def kick(server_id, user_id, kick_reason):
                 server = pakkucol[server_id]["users"]
                 if not server.find_one({"user_id": user_id}):
-                    return False
+                    server.insert_one({"user_id": user_id})
                 server.update_one({"user_id": user_id}, {"$pull": {"kicks": kick_reason}})
                 return True
 
             def mute(server_id, user_id, mute_reason):
                 server = pakkucol[server_id]["users"]
                 if not server.find_one({"user_id": user_id}):
-                    return False
+                    server.insert_one({"user_id": user_id})
                 server.update_one({"user_id": user_id}, {"$pull": {"mutes": mute_reason}})
                 return True
 
@@ -157,8 +157,16 @@ class Server:
                 self.server = pakkumdb[server_id]
                 self.server_col = self.server["users"]
 
+            def all(server_id, user_id):
+                server = pakkucol[server_id]["users"]
+                if not server.find_one({"user_id": user_id}):
+                    server.insert_one({"user_id": user_id})
+                return server.find_one({"user_id": user_id})
+
             def proles(server_id, user_id):
                 server = pakkucol[server_id]["users"]
+                if not server.find_one({"user_id": user_id}):
+                    server.insert_one({"user_id": user_id})
                 try:
                     user = server.find_one({"user_id": user_id})
                     proles = user["proles"]
@@ -168,6 +176,8 @@ class Server:
 
             def warns(server_id, user_id):
                 server = pakkucol[server_id]["users"]
+                if not server.find_one({"user_id": user_id}):
+                    server.insert_one({"user_id": user_id})
                 try:
                     user = server.find_one({"user_id": user_id})
                     warns = user["warns"]
@@ -177,6 +187,8 @@ class Server:
 
             def notes(server_id, user_id):
                 server = pakkucol[server_id]["users"]
+                if not server.find_one({"user_id": user_id}):
+                    server.insert_one({"user_id": user_id})
                 try:
                     user = server.find_one({"user_id": user_id})
                     warns = user["warns"]
@@ -186,6 +198,8 @@ class Server:
 
             def bans(server_id, user_id):
                 server = pakkucol[server_id]["users"]
+                if not server.find_one({"user_id": user_id}):
+                    server.insert_one({"user_id": user_id})
                 try:
                     user = server.find_one({"user_id": user_id})
                     bans = user["bans"]
@@ -195,6 +209,8 @@ class Server:
 
             def kicks(server_id, user_id):
                 server = pakkucol[server_id]["users"]
+                if not server.find_one({"user_id": user_id}):
+                    server.insert_one({"user_id": user_id})
                 try:
                     user = server.find_one({"user_id": user_id})
                     kicks = user["kicks"]
@@ -204,6 +220,8 @@ class Server:
 
             def mutes(server_id, user_id):
                 server = pakkucol[server_id]["users"]
+                if not server.find_one({"user_id": user_id}):
+                    server.insert_one({"user_id": user_id})
                 try:
                     user = server.find_one({"user_id": user_id})
                     mutes = user["mutes"]
@@ -231,6 +249,15 @@ class Server:
                 user_list.append(user["user_id"])
             return user_list
 
+        def actions(server_id):
+            server = pakkucol[server_id]["logs"]
+            try:
+                actions = server.find_one({"logs": "actions"})
+                actions = actions["actions"]
+            except:
+                actions = "None"
+            return actions
+
 
     class Add:
         def __init__(self, server_id):
@@ -239,8 +266,10 @@ class Server:
             self.server_col = self.server["servers"]
 
         def action(server_id, action_content):
-            server = pakkucol[server_id]["actions"]
-            server.update_one({"server_id": server_id}, {"$push": {"actions": action_content}})#, upsert=True)
+            server = pakkucol[server_id]["logs"]
+            if not server.find_one({"logs": "actions"}):
+                server.insert_one({"logs": "actions"})
+            server.update_one({"logs": "actions"}, {"$push": {"actions": action_content}})
             return True
 
     def add(server_id):
@@ -256,6 +285,6 @@ print("All checks complete\nDB Accessible")
 
 #print(Server.User.add("5", "1234"))
 #print(Server.User.Add.prole("5", "1234", "1234"))
-#print(Server.User.Get.proles("5", "1234"))
-#print(Server.User.Remove.prole("5", "1234", "1234"))
-#print(Server.User.Get.proles("5", "1234"))
+#print(Server.Add.action("953778083041800293", "test"))
+#print(Server.Get.actions("953778083041800293"))
+#print(Server.User.Get.mutes("953778083041800293", "877193079952654427"))

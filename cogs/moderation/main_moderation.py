@@ -1,9 +1,13 @@
+from re import A
+import re
 import discord
 from discord.ext import commands
 from discord.commands import permissions
-from datetime import timedelta
+from datetime import datetime, timedelta
 from decouple import config
+from regex import R
 import database.dbcon as db
+import humanfriendly
 
 
 class main_moderation(commands.Cog):
@@ -79,23 +83,29 @@ class main_moderation(commands.Cog):
     @commands.command(name="mute")
     @commands.has_permissions(moderate_members=True)
     @commands.bot_has_permissions(moderate_members=True)
-    async def mute(self, ctx, member : discord.Member, *, reason=None):
+    async def mute(self, ctx, member : discord.Member, timespan, *, reason=None):
         try:
             await ctx.message.delete()
         except:
             pass
-        duration = timedelta(hours = 24)
+        try:
+            timespan = humanfriendly.parse_timespan(timespan)
+            duration = timedelta(seconds=timespan)
+        except:
+            await ctx.send(f"Please use a valid timespan.\n**Example:** `mute 123456789 5h test`\nFor further information, please use `help moderation mute`", delete_after=10)
+            return False
+            #duration = timedelta(hours = 24)
         try:
             await member.timeout_for(duration, reason=reason)
-            db.Server.Add.action(str(ctx.guild.id),str( ctx.message.author.id) + " muted " + str(member.id) + " for " + str(reason))
+            await ctx.send(f"Muted {member.name} for {timespan}", delete_after=10)
+            db.Server.Add.action(str(ctx.guild.id),str( ctx.message.author.id) + " muted " + str(member.id) + " for " + str(timespan) + " for " + str(reason))
             db.Server.User.Add.mute(str(ctx.message.guild.id), str(member.id), str(reason))
             await member.send(f"You were muted on {ctx.message.guild.name} for {reason}")
-            await ctx.send(f"Muted {member.name}", delete_after=10)
         except:
-            await member.mute(duration, reason=reason)
-            db.Server.Add.action(str(ctx.guild.id),str( ctx.message.author.id) + " muted " + str(member.id) + " for " + str(reason))
+            await member.timeout_for(duration, reason=reason)
+            await ctx.send(f"Muted {member.name} for {timespan}", delete_after=10)
+            db.Server.Add.action(str(ctx.guild.id),str( ctx.message.author.id) + " muted " + str(member.id) + " for " + str(timespan) + " for " + str(reason))
             db.Server.User.Add.mute(str(ctx.message.guild.id), str(member.id), str(reason))
-            await ctx.send(f"Muted {member.name}", delete_after=10)
 
     @commands.command(name="unmute")
     @commands.has_permissions(moderate_members=True)
@@ -107,8 +117,8 @@ class main_moderation(commands.Cog):
             pass
         try:
             await member.remove_timeout()
-            db.Server.Add.action(str(ctx.guild.id), str(ctx.message.author.id) + " unmuted " + str(member.id))
             await ctx.send(f"Unmuted {member.name}", delete_after=10)
+            db.Server.Add.action(str(ctx.guild.id), str(ctx.message.author.id) + " unmuted " + str(member.id))
         except:
             await ctx.send(f"Can't unmute {member.name}", delete_after=10)
 
@@ -144,6 +154,105 @@ class main_moderation(commands.Cog):
             except:
                 await ctx.send(f"Can't add note to {member.name}", delete_after=10)
 
+    @commands.command(name="modlogs")
+    async def modlogs(self, ctx, member : discord.Member):
+        try:
+            await ctx.message.delete()
+        except:
+            pass
+        ulogs = db.Server.User.Get.all(str(ctx.guild.id), str(member.id))
+        embed = discord.Embed(title=f"{member.name}'s Modlogs", color=member.color)
+        try:
+            embed.set_thumbnail(url=member.avatar.url)
+        except:
+            pass
+        embed.add_field(name="ID, Nickname, Ping", value=f"ID: {member.id} \nNickname: {member.display_name} \Ping: {member.mention}", inline = False)
+
+        try:
+            if ulogs["warns"] != None:
+                warns = ""
+                for warn in ulogs["warns"]:
+                    warns += f"`{warn}`\n"
+                embed.add_field(name=f"Warns ({len(ulogs['warns'])})", value=mutes, inline = True)
+        except:
+            pass
+        try:
+            if ulogs["mutes"] != None:
+                mutes = ""
+                for mute in ulogs["mutes"]:
+                    mutes += f"`{mute}`\n"
+                embed.add_field(name=f"Mutes ({len(ulogs['mutes'])})", value=mutes, inline = True)
+        except:
+            pass
+        try:
+            if ulogs["kicks"] != None:
+                kicks = ""
+                for kick in ulogs["kicks"]:
+                    kicks += f"`{kick}`\n"
+                embed.add_field(name=f"Kicks ({len(ulogs['kicks'])})", value=mutes, inline = True)
+        except:
+            pass
+        try:
+            if ulogs["notes"] != None:
+                notes = ""
+                for note in ulogs["notes"]:
+                    notes += f"`{note}`\n"
+                embed.add_field(name=f"Notes ({len(ulogs['notes'])})", value=mutes, inline = True)
+        except:
+            pass
+        try:
+            if ulogs["bans"] != None:
+                bans = ""
+                for ban in ulogs["bans"]:
+                    bans += f"`{ban}`\n"
+                embed.add_field(name=f"Bans ({len(ulogs['bans'])})", value=mutes, inline = True)
+        except:
+            pass
+        try:
+            if ulogs["proles"] != None:
+                proles = ""
+                for prole in ulogs["proles"]:
+                    proles += f"`{prole}`\n"
+                embed.add_field(name=f"Persistant Roles ({len(ulogs['proles'])})", value=mutes, inline = True)
+        except:
+            pass
+        await ctx.send(embed=embed)
+
+    @commands.command(name="serverlogs")
+    async def serverlogs(self, ctx):
+        try:
+            await ctx.message.delete()
+        except:
+            pass
+        actions = db.Server.Get.actions(str(ctx.guild.id))
+        try:
+            if actions != None and actions != [] and actions != "None":
+                if len('\n'.join(actions[100:])) > 1000:
+                    if len('\n'.join(actions[75:])) > 1000:
+                        if len('\n'.join(actions[50:])) > 1000:
+                            if len('\n'.join(actions[25:])) > 1000:
+                                if len('\n'.join(actions[1:])) > 1000:
+                                    await ctx.send(f"Too many actions to display", delete_after=10)
+                                    return
+                                else:
+                                    await ctx.send("```" + actions[:1] + "```")
+                                    return
+                            else:
+                                await ctx.send("```" + '\n'.join(actions[:25]) + "```")
+                                return
+                        else:
+                            await ctx.send("```" + '\n'.join(actions[:50]) + "```")
+                            return
+                    else:
+                        await ctx.send("```" + '\n'.join(actions[:75]) + "```")
+                        return
+                else:
+                    await ctx.send("```" + '\n'.join(actions[:100]) + "```")
+                    return
+            else:
+                await ctx.send("There are no actions to display", delete_after=10)
+        except:
+            await ctx.send("Something went wrong fetching the data...", delete_after=10)
 
 def setup(client):
     client.add_cog(main_moderation(client))
