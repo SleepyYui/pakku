@@ -1,8 +1,6 @@
 from re import A
-import re
 import discord
 from discord.ext import commands
-from discord.commands import permissions
 from datetime import datetime, timedelta
 from decouple import config
 from regex import R
@@ -15,6 +13,11 @@ class main_moderation(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    def member_is_moderator(self, member):
+        if member.guild_permissions.kick_members or member.guild_permissions.ban_members or member.guild_permissions.administrator:
+            return True
+        else:
+            return False
 
     @commands.command(name="ban")
     @commands.has_permissions(ban_members=True)
@@ -24,6 +27,9 @@ class main_moderation(commands.Cog):
             await ctx.message.delete()
         except:
             pass
+        if  self.member_is_moderator(member):
+            await ctx.send("You can't ban this member", delete_after=10)
+            return False
         try:
             await member.ban(reason=reason)
             db.Server.Add.action(str(ctx.guild.id), str(ctx.message.author.id) + " banned " + str(member.id) + " for " + str(reason))
@@ -68,6 +74,9 @@ class main_moderation(commands.Cog):
             await ctx.message.delete()
         except:
             pass
+        if self.member_is_moderator(member):
+            await ctx.send("You can't kick this member", delete_after=10)
+            return False
         try:
             await member.kick(reason=reason)
             db.Server.Add.action(str(ctx.guild.id), str(ctx.message.author.id) + " kicked " + str(member.id) + " for " + str(reason))
@@ -95,6 +104,9 @@ class main_moderation(commands.Cog):
             await ctx.send(f"Please use a valid timespan.\n**Example:** `mute 123456789 5h test`\nFor further information, please use `help moderation mute`", delete_after=10)
             return False
             #duration = timedelta(hours = 24)
+        if self.member_is_moderator(member):
+            await ctx.send("You can't mute this member", delete_after=10)
+            return False
         try:
             await member.timeout_for(duration, reason=reason)
             await ctx.send(f"Muted {member.name} for {timespan}", delete_after=10)
@@ -123,11 +135,16 @@ class main_moderation(commands.Cog):
             await ctx.send(f"Can't unmute {member.name}", delete_after=10)
 
     @commands.command(name="warn")
+    @commands.has_permissions(moderate_members=True)
+    @commands.bot_has_permissions(moderate_members=True)
     async def warn(self, ctx, member : discord.Member, *, reason=None):
         try:
             ctx.message.delete()
         except:
             pass
+        if reason == None:
+            await ctx.send(f"Please provide a reason", delete_after=10)
+            return False
         try:
             db.Server.Add.action(str(ctx.guild.id), str(ctx.message.author.id) + " warned " + str(member.id) + " for " + str(reason))
             db.Server.User.Add.warn(str(ctx.message.guild.id), str(member.id), str(reason))
@@ -139,6 +156,8 @@ class main_moderation(commands.Cog):
             await ctx.send(f"Warned {member.name}", delete_after=10)
 
     @commands.command(name="noteuser")
+    @commands.has_permissions(moderate_members=True)
+    @commands.bot_has_permissions(moderate_members=True)
     async def noteuser(self, ctx, member : discord.Member, *, note=None):
         try:
             await ctx.message.delete()
@@ -155,13 +174,15 @@ class main_moderation(commands.Cog):
                 await ctx.send(f"Can't add note to {member.name}", delete_after=10)
 
     @commands.command(name="modlogs")
+    @commands.has_permissions(view_audit_log=True)
+    @commands.bot_has_permissions(view_audit_log=True)
     async def modlogs(self, ctx, member : discord.Member):
         try:
             await ctx.message.delete()
         except:
             pass
         ulogs = db.Server.User.Get.all(str(ctx.guild.id), str(member.id))
-        embed = discord.Embed(title=f"{member.name}'s Modlogs", color=member.color)
+        embed = discord.Embed(title=f"{member.name}'s Modlogs", color=member.color, timestamp=datetime.now())
         try:
             embed.set_thumbnail(url=member.avatar.url)
         except:
@@ -219,6 +240,8 @@ class main_moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(name="serverlogs")
+    @commands.has_permissions(moderate_members=True)
+    @commands.bot_has_permissions(moderate_members=True)
     async def serverlogs(self, ctx):
         try:
             await ctx.message.delete()
@@ -227,10 +250,10 @@ class main_moderation(commands.Cog):
         actions = db.Server.Get.actions(str(ctx.guild.id))
         try:
             if actions != None and actions != [] and actions != "None":
-                if len('\n'.join(actions[100:])) > 1000:
-                    if len('\n'.join(actions[75:])) > 1000:
-                        if len('\n'.join(actions[50:])) > 1000:
-                            if len('\n'.join(actions[25:])) > 1000:
+                if len('\n'.join(actions[25:])) > 1000:
+                    if len('\n'.join(actions[20:])) > 1000:
+                        if len('\n'.join(actions[15:])) > 1000:
+                            if len('\n'.join(actions[10:])) > 1000:
                                 if len('\n'.join(actions[1:])) > 1000:
                                     await ctx.send(f"Too many actions to display", delete_after=10)
                                     return
@@ -238,16 +261,16 @@ class main_moderation(commands.Cog):
                                     await ctx.send("```" + actions[:1] + "```")
                                     return
                             else:
-                                await ctx.send("```" + '\n'.join(actions[:25]) + "```")
+                                await ctx.send("```" + '\n'.join(actions[:10]) + "```")
                                 return
                         else:
-                            await ctx.send("```" + '\n'.join(actions[:50]) + "```")
+                            await ctx.send("```" + '\n'.join(actions[:15]) + "```")
                             return
                     else:
-                        await ctx.send("```" + '\n'.join(actions[:75]) + "```")
+                        await ctx.send("```" + '\n'.join(actions[:20]) + "```")
                         return
                 else:
-                    await ctx.send("```" + '\n'.join(actions[:100]) + "```")
+                    await ctx.send("```" + '\n'.join(actions[:25]) + "```")
                     return
             else:
                 await ctx.send("There are no actions to display", delete_after=10)

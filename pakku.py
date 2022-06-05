@@ -3,15 +3,10 @@
 
 import discord
 from discord.ext import commands
-import asyncio
-from discord.ext import tasks
 from datetime import datetime
-from datetime import date
-import json
 from discord.ext.commands import CommandNotFound
 import os
 from discord.utils import get
-import schedule
 from discord.ext.commands import MemberNotFound
 from discord.ext.commands import MissingPermissions
 from decouple import config
@@ -27,7 +22,7 @@ client.remove_command('help')
 @client.event
 async def on_ready():
     print("Bot is online")
-    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="anime"), status=discord.Status.online)
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Discord Users"), status=discord.Status.online)
     client.start_time = datetime.now()
 
 
