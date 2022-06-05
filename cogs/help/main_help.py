@@ -58,6 +58,8 @@ class help(commands.Cog):
                 await ctx.send(embed=impf.Help.Server.serverinfo(self.client))
             elif subarg == "purge" and self.member_is_moderator(ctx.author) == True:
                 await ctx.send(embed=impf.Help.Server.purge(self.client))
+            elif subarg == "serverinfo":
+                await ctx.send(embed=impf.Help.Server.serverinfo(self.client))
             else:
                 await ctx.send(embed=impf.Help.Server.all(self.client))
         elif arg == "additional":
@@ -69,10 +71,12 @@ class help(commands.Cog):
                 await ctx.send(embed=impf.Help.Additional.prefix(self.client))
             elif subarg == "userinfo":
                 await ctx.send(embed=impf.Help.Additional.userinfo(self.client))
-            elif subarg == "serverinfo":
-                await ctx.send(embed=impf.Help.Additional.serverinfo(self.client))
+            elif subarg == "botinfo":
+                await ctx.send(embed=impf.Help.Additional.botinfo(self.client))
             else:
                 await ctx.send(embed=impf.Help.Additional.all(self.client))
+        else:
+            await ctx.send(embed=impf.Help.general(self.client))
 
 
 def setup(client):

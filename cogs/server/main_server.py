@@ -52,7 +52,7 @@ class main_server(commands.Cog):
             await ctx.message.delete()
         except:
             pass
-        embed = Embed(title="Server Info", color=discord.Color.blue(), timestamp=datetime.now())
+        embed = Embed(title="Server Info", color=discord.Color.blue())#, timestamp=datetime.now())
         embed.set_thumbnail(url=ctx.guild.icon)
         statuses = [len(list(filter(lambda m: str(m.status) == "online", ctx.guild.members))),
             len(list(filter(lambda m: str(m.status) == "idle", ctx.guild.members))),
@@ -86,7 +86,7 @@ class main_server(commands.Cog):
             await ctx.message.delete()
         except:
             pass
-        embed = discord.Embed(title="User Info", color=discord.Color.blue(), timestamp=datetime.now())
+        embed = discord.Embed(title="User Info", color=discord.Color.blue())#, timestamp=datetime.now())
         embed.set_thumbnail(url=user.avatar.url)
         embed.add_field(name="Username:", value=user.name, inline=True)
         embed.add_field(name="Nickname:", value=user.nick, inline=True)
@@ -96,19 +96,6 @@ class main_server(commands.Cog):
         embed.add_field(name="Created at:", value=user.created_at.strftime("%d/%m/%Y %H:%M:%S"), inline=True)
         embed.add_field(name="Roles:", value=", ".join([x.name for x in user.roles]), inline=True)
         embed.add_field(name="Bot:", value=user.bot, inline=True)
-        embed.add_field(name="\u200b", value="\u200b", inline=True)
-        await ctx.send(embed=embed)
-
-    @commands.command(name="ping")
-    async def ping(self, ctx):
-        try:
-            await ctx.message.delete()
-        except:
-            pass
-        embed = discord.Embed(title="Pong!", color=discord.Color.blue(), timestamp=datetime.now())
-        embed.set_thumbnail(url=self.client.user.avatar.url)
-        embed.add_field(name="Latency:", value=f"{round(self.client.latency * 1000)}ms", inline=True)
-        #embed.add_field(name="Uptime:", value=f"{round(time.time() - self.client.uptime)}s", inline=True)
         embed.add_field(name="\u200b", value="\u200b", inline=True)
         await ctx.send(embed=embed)
 

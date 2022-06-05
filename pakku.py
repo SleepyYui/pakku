@@ -12,11 +12,32 @@ from discord.ext.commands import MissingPermissions
 from decouple import config
 
 
+shardcount = int(config('SHARD_COUNT'))
 
 
-client = commands.Bot(command_prefix=["pk ", "Pk ", "PK ", "pk", "Pk", "PK"], intents=discord.Intents.all(), case_insensitive=True)
+client = commands.AutoShardedBot(shard_count=shardcount, command_prefix=["pk ", "Pk ", "PK ", "pk", "Pk", "PK"], intents=discord.Intents.all(), case_insensitive=True)
+#client = commands.Bot(command_prefix=["pk ", "Pk ", "PK ", "pk", "Pk", "PK"], intents=discord.Intents.all(), case_insensitive=True)
 client.remove_command('help')
 
+@commands.Cog.listener()
+async def on_shard_ready(self, shard_id:int):
+    print(f"Shard {shard_id} ready!")
+
+@commands.Cog.listener()
+async def on_shard_disconnect(self, shard_id:int):
+    print(f"Shard {shard_id} disconnected!")
+
+@commands.Cog.listener()
+async def on_shard_connect(self, shard_id:int):
+    print(f"Shard {shard_id} connected!")
+
+@commands.Cog.listener()
+async def on_shard_resume(self, shard_id:int):
+    print(f"Shard {shard_id} connected!")
+
+@commands.Cog.listener()
+async def on_resume(self):
+    print("Resumed!")
 
 
 @client.event

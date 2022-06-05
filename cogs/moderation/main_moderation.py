@@ -182,7 +182,7 @@ class main_moderation(commands.Cog):
         except:
             pass
         ulogs = db.Server.User.Get.all(str(ctx.guild.id), str(member.id))
-        embed = discord.Embed(title=f"{member.name}'s Modlogs", color=member.color, timestamp=datetime.now())
+        embed = discord.Embed(title=f"{member.name}'s Modlogs", color=member.color)#, timestamp=datetime.now())
         try:
             embed.set_thumbnail(url=member.avatar.url)
         except:
