@@ -10,15 +10,15 @@ class Help:
     def general(self):
         embed = discord.Embed(title="Help", description="This is the help command.", color=discord.Color.blue())#, timestamp=datetime.now())
         embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/741938289547804713/d0b9900170ec1b95fc01e222c94f3944.png")
-        embed.add_field(name="`pk help`", value="Shows this message.", inline=False)
-        embed.add_field(name="\u200b", value="\u200b", inline=False)
+        embed.add_field(name="Pk help", value="Shows this message.", inline=False)
+        #embed.add_field(name="\u200b", value="\u200b", inline=False)
         #embed.add_field(name="`pk help <command>`", value="Shows help for a command.", inline=False)
         #embed.add_field(name="\u200b", value="\u200b", inline=False)
-        embed.add_field(name="`pk help <category>`", value="Shows help for a category.\nThose are: ```\nModeration\nServer\nAdditional``` as of now.", inline=False)
-        embed.add_field(name="\u200b", value="\u200b", inline=False)
-        embed.add_field(name="`pk help <category> <command>`", value="Shows help for a command in a category.", inline=False)
-        embed.add_field(name="\u200b", value="\u200b", inline=False)
-        embed.add_field(name="`pk help <category> <command> <subcommand>`", value="Shows help for a subcommand in a command in a category. -> The same as `pk help <command> <subcommand>`\n*This command is not working as of now.*", inline=False)
+        embed.add_field(name="Pk help <category>", value="Shows help for a category.\nThose are: ```\nModeration\nServer\nAdditional``` as of now.", inline=False)
+        #embed.add_field(name="\u200b", value="\u200b", inline=False)
+        embed.add_field(name="Pk help <category> <command>", value="Shows help for a command in a category.", inline=False)
+        #embed.add_field(name="\u200b", value="\u200b", inline=False)
+        embed.add_field(name="Pk help <category> <command> <subcommand>", value="Shows help for a subcommand in a command in a category. -> The same as `pk help <command> <subcommand>`\n*This command is not working as of now.*", inline=False)
         return embed
 
     class Moderation:

@@ -109,7 +109,7 @@ class main_moderation(commands.Cog):
             return False
         try:
             await member.timeout_for(duration, reason=reason)
-            await ctx.send(f"Muted {member.name} for {timespan}", delete_after=10)
+            await ctx.send(f"Muted {member.name} for {timespan}s", delete_after=10)
             db.Server.Add.action(str(ctx.guild.id),str( ctx.message.author.id) + " muted " + str(member.id) + " for " + str(timespan) + " for " + str(reason))
             db.Server.User.Add.mute(str(ctx.message.guild.id), str(member.id), str(reason))
             await member.send(f"You were muted on {ctx.message.guild.name} for {reason}")
@@ -139,7 +139,7 @@ class main_moderation(commands.Cog):
     @commands.bot_has_permissions(moderate_members=True)
     async def warn(self, ctx, member : discord.Member, *, reason=None):
         try:
-            ctx.message.delete()
+            await ctx.message.delete()
         except:
             pass
         if reason == None:
@@ -187,16 +187,17 @@ class main_moderation(commands.Cog):
             embed.set_thumbnail(url=member.avatar.url)
         except:
             pass
-        embed.add_field(name="ID, Nickname, Ping", value=f"ID: {member.id} \nNickname: {member.display_name} \Ping: {member.mention}", inline = False)
+        embed.add_field(name="ID, Nickname, Ping", value=f"ID: {member.id} \nNickname: {member.display_name} \nPing: {member.mention}", inline = False)
 
-        try:
+        #try:
+        if True:
             if ulogs["warns"] != None:
                 warns = ""
                 for warn in ulogs["warns"]:
                     warns += f"`{warn}`\n"
-                embed.add_field(name=f"Warns ({len(ulogs['warns'])})", value=mutes, inline = True)
-        except:
-            pass
+                embed.add_field(name=f"Warns ({len(ulogs['warns'])})", value=warns, inline = True)
+        #except:
+        #    pass
         try:
             if ulogs["mutes"] != None:
                 mutes = ""
@@ -210,7 +211,7 @@ class main_moderation(commands.Cog):
                 kicks = ""
                 for kick in ulogs["kicks"]:
                     kicks += f"`{kick}`\n"
-                embed.add_field(name=f"Kicks ({len(ulogs['kicks'])})", value=mutes, inline = True)
+                embed.add_field(name=f"Kicks ({len(ulogs['kicks'])})", value=kicks, inline = True)
         except:
             pass
         try:
@@ -218,7 +219,7 @@ class main_moderation(commands.Cog):
                 notes = ""
                 for note in ulogs["notes"]:
                     notes += f"`{note}`\n"
-                embed.add_field(name=f"Notes ({len(ulogs['notes'])})", value=mutes, inline = True)
+                embed.add_field(name=f"Notes ({len(ulogs['notes'])})", value=notes, inline = True)
         except:
             pass
         try:
