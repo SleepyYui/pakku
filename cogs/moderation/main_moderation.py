@@ -62,7 +62,7 @@ class main_moderation(commands.Cog):
                 await ctx.send(f"Unbanned {user.mention}", delete_after=10)
                 db.Server.Add.action(str(ctx.guild.id), str(ctx.message.author.id) + " unbanned " + str(user.id))
             except:
-                await ctx.send(f"Can't find {user.name}", delete_after=10)
+                await ctx.send(f"Can't unban {user.name}", delete_after=10)
         except:
             await ctx.send(f"User does not exist", delete_after=10)
 
