@@ -19,6 +19,7 @@ client = commands.AutoShardedBot(shard_count=shardcount, command_prefix=["pk ", 
 #client = commands.Bot(command_prefix=["pk ", "Pk ", "PK ", "pk", "Pk", "PK"], intents=discord.Intents.all(), case_insensitive=True)
 client.remove_command('help')
 
+
 @commands.Cog.listener()
 async def on_shard_ready(self, shard_id:int):
     print(f"Shard {shard_id} ready!")
